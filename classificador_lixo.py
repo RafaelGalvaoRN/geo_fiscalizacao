@@ -12,7 +12,7 @@ transform = transforms.Compose([
 ])
 
 # Carregue o conjunto de dados
-train_data = datasets.ImageFolder(r'C:\Users\User\PycharmProjects\pythonProject4\img', transform=transform)
+train_data = datasets.ImageFolder('img', transform=transform)
 train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
 
 # Utilize um modelo pré-treinado e ajuste a última camada
