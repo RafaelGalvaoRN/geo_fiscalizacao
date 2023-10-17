@@ -50,7 +50,7 @@ def clean_blocks(blocks):
 
 def get_data():
     # Conexão com o banco de dados SQLite
-    conn = sqlite3.connect(r'C:\Users\User\PycharmProjects\pythonProject4\base_dados\cadastro.db')
+    conn = sqlite3.connect('base_dados/cadastro.db')
     cursor = conn.cursor()
 
     result = None
@@ -106,7 +106,7 @@ def plot_denuncias_map(df):
 
 def get_lat_long_denuciante(id):
     # Conexão com o banco de dados SQLite
-    conn = sqlite3.connect(r'C:\Users\User\PycharmProjects\pythonProject4\base_dados\cadastro.db')
+    conn = sqlite3.connect('base_dados/cadastro.db')
     cursor = conn.cursor()
 
     result = None
@@ -130,7 +130,7 @@ def get_lat_long_denuciante(id):
 
 def update_status_denunciantes_by_id(id, new_status):
     # Conexão com o banco de dados SQLite
-    conn = sqlite3.connect(r'C:\Users\User\PycharmProjects\pythonProject4\base_dados\cadastro.db')
+    conn = sqlite3.connect('base_dados/cadastro.db')
     cursor = conn.cursor()
 
     try:

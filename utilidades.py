@@ -91,7 +91,7 @@ class Denuncia():
 
     def update_database(self):
         # Conectar ao banco de dados SQLite (substitua 'my_database.db' pelo nome do seu arquivo de banco de dados)
-        conn = sqlite3.connect(r'C:\Users\User\PycharmProjects\pythonProject4\base_dados\cadastro.db')
+        conn = sqlite3.connect('base_dados/cadastro.db')
         cursor = conn.cursor()
 
         # Verificar se a tabela 'denuncias' existe; se não, você deve criá-la primeiro
@@ -191,7 +191,7 @@ class Denuncia():
 
     def valida_img_hash(self):
         # Conexão com o banco de dados SQLite
-        conn = sqlite3.connect(r'C:\Users\User\PycharmProjects\pythonProject4\base_dados\cadastro.db')
+        conn = sqlite3.connect('base_dados/cadastro.db')
         cursor = conn.cursor()
 
         try:
@@ -215,7 +215,7 @@ class Denuncia():
 
     def valida_img_byte(self):
         # Conexão com o banco de dados SQLite
-        conn = sqlite3.connect(r'C:\Users\User\PycharmProjects\pythonProject4\base_dados\cadastro.db')
+        conn = sqlite3.connect('base_dados/cadastro.db')
         cursor = conn.cursor()
 
         try:
@@ -271,7 +271,7 @@ class Fiscalizacao(Denuncia):
 
     def update_database(self):
         # Conectar ao banco de dados SQLite (substitua 'my_database.db' pelo nome do seu arquivo de banco de dados)
-        conn = sqlite3.connect(r'C:\Users\User\PycharmProjects\pythonProject4\base_dados\cadastro.db')
+        conn = sqlite3.connect('base_dados/cadastro.db')
         cursor = conn.cursor()
 
         # Verificar se a tabela 'denuncias' existe; se não, você deve criá-la primeiro
