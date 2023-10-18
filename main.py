@@ -35,23 +35,23 @@ if uploaded_file is not None:
 
     # Exibindo os resultados
     classes = ['Lixo', 'Sem Lixo']
-    st.write(f"A imagem foi classificada como **{classes[class_idx]}**.")
+    # st.write(f"A imagem foi classificada como contendo: **{classes[class_idx]}**.")
     denuncia.img_classificacao = classes[class_idx]
 
     # Get and display the date and geotagging
     try:
         date, geotagging = get_exif_data("temp_img.jpg")
-        st.write(f"The photo was taken on: {date}")
-        st.write(f"Geotagging info: {geotagging}")
+        # st.write(f"The photo was taken on: {date}")
+        # st.write(f"Geotagging info: {geotagging}")
     except Exception as e:
         st.write("Could not retrieve all EXIF data.")
         st.write(str(e))
 
-    st.write(f"Screen width is {streamlit_js_eval(js_expressions='screen.width', key='SCR')}")
+    # st.write(f"Screen width is {streamlit_js_eval(js_expressions='screen.width', key='SCR')}")
     loc = get_geolocation()
     # st.write(f"Your coordinates are {loc}")
 
-    st.markdown(f"The remote ip is {get_remote_ip()}")
+    # st.markdown(f"The remote ip is {get_remote_ip()}")
 
 
 
