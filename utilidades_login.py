@@ -75,6 +75,33 @@ def get_data():
         return result
 
 
+
+def trata_df(df, drop_column = False, rename_column = False, filter_status=False):
+
+    #renomeia as colunas
+    if rename_column:
+        df = df.rename(columns={'tipo': 'Tipo de Denúncia', 'local': 'Logradouro',
+                                "bairro": "Bairro", "cidade": "Cidade", "estado": "Estado",
+                                "img_classificacao": "Classificação da Imagem", "data_denuncia": "Data da Denúncia",
+                                "status": "Status", "img_latitude": "Latitude", "img_longitude": "Longitude"})
+
+    if drop_column:
+        #exclui do df a coluna img_byte
+        df = df.drop(columns=["img_byte"])
+
+    if filter_status and rename_column:
+        #exclui do df as demandas baixadas
+        filter = df["Status"] != "Demanda Analisada e Baixada"
+        df = df[filter]
+
+    elif filter_status:
+        # exclui do df as demandas baixadas
+        filter = df["status"] != "Demanda Analisada e Baixada"
+        df = df[filter]
+
+    return df
+
+
 def plot_denuncias_map(df):
     m = folium.Map(location=[-6.38139, -35.1281], zoom_start=12)
 

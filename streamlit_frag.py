@@ -2,7 +2,7 @@
 import streamlit as st
 from ml import predict_image_lixo
 from classificador_lixo import model, transform
-from utilidades import get_exif_data, Fiscalizacao
+from utilidades import get_exif_data
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
 
 
@@ -35,7 +35,7 @@ def menu():
 
     col1, col2 = st.columns(2)
     with col1:
-        cidade = st.text_input("Cidade", max_chars=30)
+        cidade = st.selectbox("Cidade", ["Canguaretama", "Vila Flor", "Pedro Velho", "Baía Formosa"])
     with col2:
         estado = st.selectbox("Estado", ["RN", "CE", "PB"])
 
@@ -70,7 +70,7 @@ def menu_fiscalizacao():
 
 def cadastrador_foto():
     uploaded_file = st.file_uploader(
-        "Escolha uma foto de um banheiro para eu dizer se ela é acessível...",
+        "Escolha uma foto para fins de análise e registro da denúncia...",
         type=["jpg", "jpeg", "jfif", "png"]
     )
     return uploaded_file
@@ -86,7 +86,7 @@ def select_captura():
 
 
 def cadastro_fiscalizacao(id, uploaded_file):
-        st.image(uploaded_file, caption="Imagem carregada.", use_column_width=True)
+        st.image(uploaded_file, caption="Imagem carregada.", use_column_width="auto")
         st.write("Analisando a imagem...")
 
         # Salve o arquivo carregado temporariamente e faça a previsão

@@ -1,5 +1,4 @@
-from PIL import Image
-from PIL.ExifTags import TAGS, GPSTAGS
+from PIL.ExifTags import GPSTAGS
 from datetime import datetime
 import hashlib
 import sqlite3
@@ -7,6 +6,8 @@ import streamlit as st
 import re
 from classificador_lixo import model, transform
 from ml import predict_image_lixo
+from utilidades_login import haversine_distance, are_points_close
+from rich import print
 
 
 def get_geotagging(exif):
@@ -75,6 +76,7 @@ class Denuncia():
         self.img_longitude = None
         self.img_classificacao = None
         self.data_denuncia = None
+        self.ip_denunciante = None
         self.status = "Em análise"
 
     def set_image_bytes(self, img_bytes):
@@ -98,10 +100,10 @@ class Denuncia():
 
         # Inserir ou atualizar um registro na tabela com base no nome (ou outro campo exclusivo)
         cursor.execute('''
-               INSERT OR REPLACE INTO denunciantes (tipo, nome, local, bairro, cidade, estado, telefone, email, img_byte, img_hash, img_latitude, img_longitude, img_classificacao, data_denuncia, status)
-               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+               INSERT OR REPLACE INTO denunciantes (tipo, nome, local, bairro, cidade, estado, telefone, email, img_byte, img_hash, img_latitude, img_longitude, img_classificacao, data_denuncia, status, ip_denunciante)
+               VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ''', (self.tipo, self.nome, self.local, self.bairro, self.cidade, self.estado, self.telefone, self.email, self.img_byte,
-                 self.img_hash, self.img_latitude, self.img_longitude, self.img_classificacao , self.data_denuncia, self.status))
+                 self.img_hash, self.img_latitude, self.img_longitude, self.img_classificacao , self.data_denuncia, self.status ,self.ip_denunciante))
 
         # Commit e fechar a conexão com o banco de dados
         conn.commit()
@@ -234,11 +236,71 @@ class Denuncia():
             return False
 
         finally:
-            # Sempre certifique-se de fechar a conexão com o banco de dados
             conn.close()
 
+    def valida_img_distance(self):
+        erro_validacao = False
 
-from rich import print
+        if self.cidade not in ["Canguaretama", "Vila Flor", "Pedro Velho", "Baía Formosa"]:
+            st.error("Cidade não abrangida pelo sistema")
+            erro_validacao = True  # Marca que ocorreu um erro
+
+
+        elif self.cidade == "Canguaretama":
+            print('entrei aqui ')
+            lat = -6.38285
+            long = -35.1249
+
+        elif self.cidade == "Vila Flor":
+            lat = -6.31287
+            long = -35.067
+
+        elif self.cidade == "Pedro Velho":
+            lat = -6.43969
+            long = -35.2219
+
+        elif self.cidade == "Baía Formosa":
+            lat = -6.37124
+            long = -35.00528
+
+
+
+        if not are_points_close(self.img_latitude, self.img_longitude, lat, long, 30000):
+            st.error("Área da foto/denunciante além dos limites territoriais do sistema")
+            erro_validacao = True
+
+        return erro_validacao
+
+    def valida_qtd_denuncias(self, numero):
+        # Conectar ao banco de dados SQLite
+        conn = sqlite3.connect('base_dados/cadastro.db')
+        cursor = conn.cursor()
+
+        # Obtenha a data atual para filtrar as denúncias do dia
+        data_atual = datetime.now().strftime('%Y-%m-%d')
+
+        # Consulta para contar quantas denúncias foram feitas pelo IP no dia atual
+        cursor.execute('''
+            SELECT COUNT(*)
+            FROM denunciantes
+            WHERE ip_denunciante = ? AND date(data_denuncia) = ?
+        ''', (self.ip_denunciante, data_atual))
+
+        # Obtém o resultado da consulta
+        count = cursor.fetchone()[0]
+
+        # Fecha a conexão com o banco de dados
+        conn.close()
+
+        # Verifica a condição e retorna True ou False
+        if count >= numero:
+            st.error("Quantidade de denúncias ultrapassadas")
+            return False
+        else:
+            return True
+
+
+
 class Fiscalizacao(Denuncia):
     def __init__(self, id_denuncia, nome, local, bairro, cidade, estado, uploaded_file, latitude, longitude):
         self.id_denuncia = id_denuncia
@@ -287,3 +349,25 @@ class Fiscalizacao(Denuncia):
         # Commit e fechar a conexão com o banco de dados
         conn.commit()
         conn.close()
+
+
+
+from streamlit import runtime
+from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+
+def get_remote_ip() -> str:
+    """Get remote ip."""
+    try:
+        ctx = get_script_run_ctx()
+        if ctx is None:
+            return None
+
+        session_info = runtime.get_instance().get_client(ctx.session_id)
+        if session_info is None:
+            return None
+    except Exception as e:
+        return None
+    return session_info.request.remote_ip
+
+

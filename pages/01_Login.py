@@ -15,12 +15,13 @@ if password != "":
         st.success("Autenticação realizada com sucesso!")
         data = get_data()
 
-        data_sem_img_byte = data.drop(columns=["img_byte"])
+        data_tratado = trata_df(data, drop_column=True, rename_column=True, filter_status=True)
 
         st.title("Tabela Controle das Denúncias")
-        st.table(data_sem_img_byte)
+        st.table(data_tratado)
 
         st.title("Mapa das Denúncias")
+        data = trata_df(data, filter_status=True)
         mapa = plot_denuncias_map(data)
         folium_static(mapa, width=900)
 
@@ -33,14 +34,12 @@ if password != "":
             fiscalizacao = Fiscalizacao(id_denuncia, nome_fiscal, local, bairro,
                                         cidade, estado, upload_file, latitude, longitude)
 
-
             if st.button("Cadastrar fiscalização"):
                 fiscalizacao.update_data_denuncia()
                 fiscalizacao.update_database()
                 st.success("Cadastro de Fiscalização realizado com sucesso!")
 
-
-                #verifica distancia entre a foto da denuncia, pelo id, com a foto juntada pela fiscalizacao - maximo 500 metros
+                # verifica distancia entre a foto da denuncia, pelo id, com a foto juntada pela fiscalizacao - maximo 500 metros
                 ponto_fiscalizacao = (fiscalizacao.img_latitude, fiscalizacao.img_longitude)
                 ponto_denuncia = get_lat_long_denuciante(id_denuncia)[0]
                 max_meters = 500
@@ -56,9 +55,8 @@ if password != "":
                         st.error("Foto não foi classificada como 'sem lixo'")
 
                 else:
-                    st.write("A foto juntada pela fiscalização não corresponde com a área da foto juntada pela denúncia")
-
-
+                    st.write(
+                        "A foto juntada pela fiscalização não corresponde com a área da foto juntada pela denúncia")
 
 
     else:

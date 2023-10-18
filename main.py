@@ -1,7 +1,7 @@
 import streamlit as st
 from classificador_lixo import model, transform
 from ml import predict_image_lixo
-from utilidades import get_exif_data, Denuncia
+from utilidades import get_exif_data, Denuncia, get_remote_ip
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
 from streamlit_frag import menu, select_captura, oculta_elementos
 import pandas as pd
@@ -49,16 +49,18 @@ if uploaded_file is not None:
 
     st.write(f"Screen width is {streamlit_js_eval(js_expressions='screen.width', key='SCR')}")
     loc = get_geolocation()
-    st.write(f"Your coordinates are {loc}")
+    # st.write(f"Your coordinates are {loc}")
 
-    st.write(f"Latitude: {loc['coords']['latitude']}")
-    st.write(f"Latitude: {loc['coords']['longitude']}")
+    st.markdown(f"The remote ip is {get_remote_ip()}")
+
+
 
     latitude = loc['coords']['latitude']
     longitude = loc['coords']['longitude']
 
     denuncia.img_latitude = latitude
     denuncia.img_longitude = longitude
+    denuncia.ip_denunciante = get_remote_ip()
 
     # Criando um mapa com um marcador baseado nas coordenadas obtidas
     map_data = pd.DataFrame({'lat': [latitude], 'lon': [longitude]})
@@ -73,8 +75,10 @@ if uploaded_file is not None:
 
     if st.button("Cadastrar Denúncia"):
         erro_validacao = denuncia.valida_cadastro()
+        erro_area_img = denuncia.valida_img_distance()
+        erro_qtd_denuncia = denuncia.valida_qtd_denuncias(10)
 
-        if not erro_validacao:
+        if not erro_validacao and not erro_area_img and not erro_qtd_denuncia:
             denuncia.update_database()
             st.success("Cadastro Realizado com sucesso")
 
