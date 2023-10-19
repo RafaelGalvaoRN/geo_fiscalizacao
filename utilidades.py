@@ -371,3 +371,19 @@ def get_remote_ip() -> str:
     return session_info.request.remote_ip
 
 
+
+
+def convert_rgba_to_rgb(image_path):
+    """
+    Converte uma imagem RGBA para RGB.
+
+    Parâmetros:
+    - image_path (str): Caminho da imagem a ser convertida.
+
+    Retorna:
+    - Image: Imagem convertida em RGB.
+    """
+    imagem = Image.open(image_path)
+    if imagem.mode == "RGBA":
+        imagem = imagem.convert("RGB")
+    return imagem
