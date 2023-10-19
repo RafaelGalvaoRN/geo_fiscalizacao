@@ -4,6 +4,10 @@ import pandas as pd
 import folium
 import base64
 import math
+from folium.plugins import FastMarkerCluster
+import tempfile
+
+
 
 def haversine_distance(lat1, lon1, lat2, lon2):
     """
@@ -101,7 +105,7 @@ def trata_df(df, drop_column = False, rename_column = False, filter_status=False
 
     return df
 
-
+#
 def plot_denuncias_map(df):
     m = folium.Map(location=[-6.38139, -35.1281], zoom_start=12)
 
@@ -129,6 +133,43 @@ def plot_denuncias_map(df):
             ).add_to(m)
 
     return m
+#
+
+# def plot_denuncias_map(df):
+#     m = folium.Map(location=[-6.38139, -35.1281], zoom_start=12)
+#
+#     locations = []  # Lista para guardar as localizações e popups
+#     for _, denuncia in df.iterrows():
+#         if 'img_latitude' in denuncia and 'img_longitude' in denuncia:
+#             # Convertendo bytes para base64
+#             img_bytes = denuncia['img_byte']
+#             img_b64 = base64.b64encode(img_bytes).decode()
+#
+#             # Criando HTML para o popup
+#             html = f"""
+#             <h1>{denuncia['tipo']}</h1>
+#             <p>{denuncia['data_denuncia']}</p>
+#             <img src="data:image/jpeg;base64,{img_b64}" alt="Denuncia img" width="300">
+#             """
+#
+#             # Converta as coordenadas para float e adicione à lista
+#             lat = float(denuncia['img_latitude'])
+#             lon = float(denuncia['img_longitude'])
+#             locations.append([lat, lon, html])
+#
+#     # Função para criar marcadores com popups personalizados
+#     def create_marker(location, popup_content):
+#         icon = folium.Icon(color="red", icon="info-sign")
+#         popup = folium.Popup(popup_content, max_width=400)
+#         return folium.Marker(location=location, icon=icon, popup=popup)
+#
+#     # Adicionando FastMarkerCluster ao mapa
+#     FastMarkerCluster(data=locations, callback=create_marker).add_to(m)
+#
+#     # Salvar o mapa em um arquivo HTML temporário
+#     tmpfile = tempfile.NamedTemporaryFile(delete=False, suffix=".html")
+#     m.save(tmpfile.name)
+#     return tmpfile.name
 
 
 def get_lat_long_denuciante(id):

@@ -23,7 +23,10 @@ if password != "":
         st.title("Mapa das Denúncias")
         data = trata_df(data, filter_status=True)
         mapa = plot_denuncias_map(data)
-        folium_static(mapa, width=900)
+        with st.expander("Geolocalização e Fotos"):
+            folium_static(mapa, width=1500, height=600)
+
+
 
         st.title("Registro de Fiscalização")
         id_denuncia, nome_fiscal, local, bairro, cidade, estado = menu_fiscalizacao()

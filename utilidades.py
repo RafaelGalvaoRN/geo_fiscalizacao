@@ -247,7 +247,6 @@ class Denuncia():
 
 
         elif self.cidade == "Canguaretama":
-            print('entrei aqui ')
             lat = -6.38285
             long = -35.1249
 
