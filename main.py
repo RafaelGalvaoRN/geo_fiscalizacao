@@ -88,30 +88,30 @@ if uploaded_file is not None:
     # longitude = loc['coords']['longitude']
     # print(longitude)
 
+    if latitude and longitude:
+        denuncia.img_latitude = latitude
+        denuncia.img_longitude = longitude
+        denuncia.ip_denunciante = get_remote_ip()
 
-    denuncia.img_latitude = latitude
-    denuncia.img_longitude = longitude
-    denuncia.ip_denunciante = get_remote_ip()
+        # Criando um mapa com um marcador baseado nas coordenadas obtidas
+        map_data = pd.DataFrame({'lat': [latitude], 'lon': [longitude]})
+        st.map(map_data)
 
-    # Criando um mapa com um marcador baseado nas coordenadas obtidas
-    map_data = pd.DataFrame({'lat': [latitude], 'lon': [longitude]})
-    st.map(map_data)
+        # Atualize a instância da classe Denuncia com os dados da imagem
 
-    # Atualize a instância da classe Denuncia com os dados da imagem
+        denuncia.set_image_bytes(uploaded_file.getbuffer())
 
-    denuncia.set_image_bytes(uploaded_file.getbuffer())
+        denuncia.calculate_image_hash()
+        denuncia.update_data_denuncia()
 
-    denuncia.calculate_image_hash()
-    denuncia.update_data_denuncia()
+        if st.button("Cadastrar Denúncia"):
+            erro_validacao = denuncia.valida_cadastro()
+            erro_area_img = denuncia.valida_img_distance()
+            erro_qtd_denuncia = denuncia.valida_qtd_denuncias(10)
 
-    if st.button("Cadastrar Denúncia"):
-        erro_validacao = denuncia.valida_cadastro()
-        erro_area_img = denuncia.valida_img_distance()
-        erro_qtd_denuncia = denuncia.valida_qtd_denuncias(10)
-
-        if not erro_validacao and not erro_area_img and not erro_qtd_denuncia:
-            denuncia.update_database()
-            st.success("Cadastro Realizado com sucesso")
+            if not erro_validacao and not erro_area_img and not erro_qtd_denuncia:
+                denuncia.update_database()
+                st.success("Cadastro Realizado com sucesso")
 
 
 
