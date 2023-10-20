@@ -5,6 +5,7 @@ from utilidades import get_exif_data, Denuncia, get_remote_ip, convert_rgba_to_r
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
 from streamlit_frag import menu, select_captura, oculta_elementos
 import pandas as pd
+import time
 from rich import print
 
 
@@ -53,13 +54,38 @@ if uploaded_file is not None:
         st.write(str(e))
 
     # st.write(f"Screen width is {streamlit_js_eval(js_expressions='screen.width', key='SCR')}")
-    loc = get_geolocation()
-    # st.write(f"Your coordinates are {loc}")
 
-    # st.markdown(f"The remote ip is {get_remote_ip()}")
 
-    latitude = loc['coords']['latitude']
-    longitude = loc['coords']['longitude']
+    max_retries = 5
+    delay = 2  # 2 segundos
+    latitude, longitude = None, None
+    for _ in range(max_retries):
+        with st.spinner('Obtendo geolocalização...'):
+            loc = get_geolocation()
+        if loc and 'coords' in loc:
+            latitude = loc['coords']['latitude']
+            longitude = loc['coords']['longitude']
+            break
+        time.sleep(delay)
+
+    if not latitude and not longitude:
+        st.error("Não foi possível obter a geolocalização.")
+        latitude, longitude = None, None
+
+    # loc = get_geolocation()
+    #
+    # # st.write(f"Your coordinates are {loc}")
+    #
+    # # st.markdown(f"The remote ip is {get_remote_ip()}")
+    #
+    #
+    #
+    # from rich import print
+    #
+    # latitude = loc['coords']['latitude']
+    # print(latitude)
+    # longitude = loc['coords']['longitude']
+    # print(longitude)
 
 
     denuncia.img_latitude = latitude

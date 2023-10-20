@@ -53,18 +53,21 @@ def menu_cidades(df):
     if opcao == "Todas":
         return df
 
-    elif opcao == "Canguaretama":
-        df = df.query("cidade == 'Canguaretama'")
-        return df
+    else:
+        return df.query(f"cidade == '{opcao}'")
 
-    elif opcao == "Vila Flor":
-        df = df.query("cidade == 'Vila Flor'")
-        return df
-
-    elif opcao == "Pedro Velho":
-        df = df.query("cidade == 'Pedro Velho'")
-        return df
-
-    elif opcao == "Baía Formosa":
-        df = df.query("cidade == 'Baía Formosa'")
-        return df
+    # elif opcao == "Canguaretama":
+    #     df = df.query("cidade == 'Canguaretama'")
+    #     return df
+    #
+    # elif opcao == "Vila Flor":
+    #     df = df.query("cidade == 'Vila Flor'")
+    #     return df
+    #
+    # elif opcao == "Pedro Velho":
+    #     df = df.query("cidade == 'Pedro Velho'")
+    #     return df
+    #
+    # elif opcao == "Baía Formosa":
+    #     df = df.query("cidade == 'Baía Formosa'")
+    #     return df
