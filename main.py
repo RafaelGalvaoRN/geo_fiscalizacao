@@ -26,7 +26,7 @@ if uploaded_file is not None:
     denuncia = Denuncia(tipo, denunciante, local, bairro, cidade, estado, telefone, email)
 
     st.image(uploaded_file, caption="Imagem carregada.", use_column_width=True)
-    st.write("Analisando a imagem...")
+
 
     # Salve o arquivo carregado temporariamente e faça a previsão
     with open("temp_img.jpg", "wb") as f:
@@ -59,12 +59,13 @@ if uploaded_file is not None:
     max_retries = 5
     delay = 2  # 2 segundos
     latitude, longitude = None, None
-    for _ in range(max_retries):
+    for i in range(max_retries):
         with st.spinner('Obtendo geolocalização...'):
-            loc = get_geolocation()
+            loc = get_geolocation(component_key=f"getLocation_{i}")
         if loc and 'coords' in loc:
             latitude = loc['coords']['latitude']
             longitude = loc['coords']['longitude']
+            st.write("Imagem Analisada")
             break
         time.sleep(delay)
 
@@ -104,13 +105,13 @@ if uploaded_file is not None:
     denuncia.update_data_denuncia()
 
     if st.button("Cadastrar Denúncia"):
-        # erro_validacao = denuncia.valida_cadastro()
-        # erro_area_img = denuncia.valida_img_distance()
-        # erro_qtd_denuncia = denuncia.valida_qtd_denuncias(10)
-        #
-        # if not erro_validacao and not erro_area_img and not erro_qtd_denuncia:
-        denuncia.update_database()
-        st.success("Cadastro Realizado com sucesso")
+        erro_validacao = denuncia.valida_cadastro()
+        erro_area_img = denuncia.valida_img_distance()
+        erro_qtd_denuncia = denuncia.valida_qtd_denuncias(10)
+
+        if not erro_validacao and not erro_area_img and not erro_qtd_denuncia:
+            denuncia.update_database()
+            st.success("Cadastro Realizado com sucesso")
 
 
 
