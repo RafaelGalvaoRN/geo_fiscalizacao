@@ -1,5 +1,6 @@
 
 import sqlite3
+import pandas as pd
 
 def create_table():
     conn = sqlite3.connect(r'C:\Users\User\PycharmProjects\pythonProject4\base_dados\cadastro.db')
@@ -122,6 +123,25 @@ def limpar_tabela_fiscalizacao():
     # Commitar as mudanças e fechar a conexão com o banco de dados
     conn.commit()
     conn.close()
+
+
+def get_dataframe():
+    conn = sqlite3.connect(r'base_dados\cadastro.db')
+
+    sql_query = pd.read_sql_query("""SELECT * FROM denunciantes""", conn)
+    df = pd.DataFrame(sql_query)
+    # Commitar as mudanças e fechar a conexão com o banco de dados
+    conn.commit()
+    conn.close()
+
+    return df
+
+
+
+
+
+
+
 
 # create_table()
 # insert_table(0, 'TipoExemplo', 'joao', 'BANANEIRAS', 'BANANEIRAS', 'BANANEIRAS', 'PARAIBA', '1111-2222', 'email@example.com', b'ImagemBytes', 'hashimagem',  -6.38285, -35.1249, 'ClassificacaoExemplo', '2023-10-13', "Em Análise")

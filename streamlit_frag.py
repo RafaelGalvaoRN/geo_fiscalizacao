@@ -7,7 +7,12 @@ from streamlit_js_eval import streamlit_js_eval, get_geolocation
 
 
 
-
+def noticias(noticia, data):
+    st.markdown(f"**{data}**")
+    # Adicionando bullet point manualmente para destaque
+    st.markdown(
+        f"- {noticia}.")
+    st.markdown("---")  # Outra linha horizontal
 
 
 def oculta_elementos():
@@ -24,7 +29,7 @@ def oculta_elementos():
 
 
 def menu():
-    tipo = st.selectbox("Tipo", ["Lixo", "Poluição Sonora", "Desmatamento",
+    tipo = st.selectbox("Tipo", ["Lixo", "Desmatamento",
                                  "Construção Irregular", "Represamento de Rio"])
 
     denunciante = st.text_input("Denunciante", max_chars=150)

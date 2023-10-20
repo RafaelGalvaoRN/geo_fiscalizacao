@@ -103,6 +103,7 @@ def trata_df(df, drop_column = False, rename_column = False, filter_status=False
         filter = df["status"] != "Demanda Analisada e Baixada"
         df = df[filter]
 
+
     return df
 
 #

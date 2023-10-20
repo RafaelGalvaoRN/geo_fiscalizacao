@@ -1,7 +1,9 @@
 import torch.nn as nn
 import torch.optim as optim
 from torch.utils.data import DataLoader
-from torchvision import datasets, transforms, models
+from torchvision import datasets, transforms
+from torchvision.models.resnet import ResNet18_Weights
+import torchvision.models as models
 
 
 # Defina transformações para pré-processar as imagens
@@ -16,7 +18,13 @@ train_data = datasets.ImageFolder('img', transform=transform)
 train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
 
 # Utilize um modelo pré-treinado e ajuste a última camada
-model = models.resnet18(pretrained=True)
+#versao deprecada
+# model = models.resnet18(pretrained=True)
+
+#versao nova
+model = models.resnet18(weights=ResNet18_Weights.IMAGENET1K_V1)
+
+
 model.fc = nn.Linear(model.fc.in_features, 2)  # Supondo que temos 2 classes: Lixo e Não-Lixo
 
 # Função de perda e otimizador

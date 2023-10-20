@@ -8,6 +8,10 @@ from classificador_lixo import model, transform
 from ml import predict_image_lixo
 from utilidades_login import haversine_distance, are_points_close
 from rich import print
+from PIL import Image
+from PIL.ExifTags import TAGS
+from streamlit import runtime
+from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 
 def get_geotagging(exif):
@@ -44,10 +48,6 @@ def get_exif_data(image_path):
     return date, geotagging
 
 
-
-from PIL import Image
-from PIL.ExifTags import TAGS
-
 def display_exif_data(image_path):
     image = Image.open(image_path)
     exif_data = image._getexif()
@@ -57,7 +57,6 @@ def display_exif_data(image_path):
             print(f"{tag_name:25}: {value}")
     else:
         print("No EXIF data found.")
-
 
 
 class Denuncia():
@@ -102,8 +101,10 @@ class Denuncia():
         cursor.execute('''
                INSERT OR REPLACE INTO denunciantes (tipo, nome, local, bairro, cidade, estado, telefone, email, img_byte, img_hash, img_latitude, img_longitude, img_classificacao, data_denuncia, status, ip_denunciante)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-           ''', (self.tipo, self.nome, self.local, self.bairro, self.cidade, self.estado, self.telefone, self.email, self.img_byte,
-                 self.img_hash, self.img_latitude, self.img_longitude, self.img_classificacao , self.data_denuncia, self.status ,self.ip_denunciante))
+           ''', (self.tipo, self.nome, self.local, self.bairro, self.cidade, self.estado, self.telefone, self.email,
+                 self.img_byte,
+                 self.img_hash, self.img_latitude, self.img_longitude, self.img_classificacao, self.data_denuncia,
+                 self.status, self.ip_denunciante))
 
         # Commit e fechar a conexão com o banco de dados
         conn.commit()
@@ -119,7 +120,6 @@ class Denuncia():
             return False  # Retorna False se o telefone não for válido
 
         return True  # Retorna True se o telefone for válido
-
 
     def valida_email(self):
         # Defina uma expressão regular para um email válido
@@ -262,8 +262,6 @@ class Denuncia():
             lat = -6.37124
             long = -35.00528
 
-
-
         if not are_points_close(self.img_latitude, self.img_longitude, lat, long, 30000):
             st.error("Área da foto/denunciante além dos limites territoriais do sistema")
             erro_validacao = True
@@ -297,7 +295,6 @@ class Denuncia():
             return False
         else:
             return True
-
 
 
 class Fiscalizacao(Denuncia):
@@ -343,16 +340,11 @@ class Fiscalizacao(Denuncia):
                 img_latitude, img_longitude, img_classificacao, data_fiscalizacao)
                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
            ''', (self.id_denuncia, self.nome, self.local, self.bairro, self.cidade, self.estado, self.img_byte,
-                 self.img_hash, self.img_latitude, self.img_longitude, self.img_classificacao , self.data_denuncia))
+                 self.img_hash, self.img_latitude, self.img_longitude, self.img_classificacao, self.data_denuncia))
 
         # Commit e fechar a conexão com o banco de dados
         conn.commit()
         conn.close()
-
-
-
-from streamlit import runtime
-from streamlit.runtime.scriptrunner import get_script_run_ctx
 
 
 def get_remote_ip() -> str:
@@ -370,8 +362,6 @@ def get_remote_ip() -> str:
     return session_info.request.remote_ip
 
 
-
-
 def convert_rgba_to_rgb(image_path):
     """
     Converte uma imagem RGBA para RGB.
@@ -386,3 +376,6 @@ def convert_rgba_to_rgb(image_path):
     if imagem.mode == "RGBA":
         imagem = imagem.convert("RGB")
     return imagem
+
+
+
