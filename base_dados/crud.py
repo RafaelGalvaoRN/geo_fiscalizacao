@@ -126,7 +126,7 @@ def limpar_tabela_fiscalizacao():
 
 
 def get_dataframe():
-    conn = sqlite3.connect(r'base_dados\cadastro.db')
+    conn = sqlite3.connect('base_dados/cadastro.db')
 
     sql_query = pd.read_sql_query("""SELECT * FROM denunciantes""", conn)
     df = pd.DataFrame(sql_query)
