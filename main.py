@@ -70,7 +70,9 @@ if uploaded_file is not None:
         time.sleep(delay)
 
     if not latitude and not longitude:
-        st.error("Não foi possível obter a geolocalização.")
+        st.error("Não foi possível obter a geolocalização da foto, inviabilizando a denúncia.")
+        st.warning("Tente ativar a Geolocalização do seu aparelho!")
+
         latitude, longitude = None, None
 
     # loc = get_geolocation()
@@ -112,6 +114,9 @@ if uploaded_file is not None:
             if not erro_validacao and not erro_area_img and not erro_qtd_denuncia:
                 denuncia.update_database()
                 st.success("Cadastro Realizado com sucesso")
+
+            else:
+                st.success("Obrigado por usar nosso aplicativo")
 
 
 

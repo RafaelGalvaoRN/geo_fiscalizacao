@@ -292,9 +292,9 @@ class Denuncia():
         # Verifica a condição e retorna True ou False
         if count >= numero:
             st.error("Quantidade de denúncias ultrapassadas")
-            return False
-        else:
             return True
+        else:
+            return False
 
 
 class Fiscalizacao(Denuncia):
