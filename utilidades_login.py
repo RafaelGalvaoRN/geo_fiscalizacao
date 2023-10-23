@@ -37,9 +37,14 @@ def are_points_close(lat1, lon1, lat2, lon2, max_distance=500):
 
 
 
+st_password = st.secrets["STREAMLIT_PASSWORD1"]
 
+# def is_authenticated(password):
+#     return password == os.environ.get("STREAMLIT_PASSWORD1")
 def is_authenticated(password):
-    return password == os.environ.get("STREAMLIT_PASSWORD1")
+    return password == st_password
+
+
 
 
 def generate_login_block():

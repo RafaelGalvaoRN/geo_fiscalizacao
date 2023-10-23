@@ -5,8 +5,12 @@ import pandas as pd
 
 
 
+st_password = st.secrets["STREAMLIT_PASSWORD"]
+
+# def is_authenticated(password):
+#     return password == os.environ.get("STREAMLIT_PASSWORD1")
 def is_authenticated(password):
-    return password == os.environ.get("STREAMLIT_PASSWORD")
+    return password == st_password
 
 
 
