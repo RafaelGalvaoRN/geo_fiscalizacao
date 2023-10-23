@@ -4,6 +4,7 @@ import pandas as pd
 import folium
 import base64
 import math
+import os
 from folium.plugins import FastMarkerCluster
 import tempfile
 
@@ -38,7 +39,8 @@ def are_points_close(lat1, lon1, lat2, lon2, max_distance=500):
 
 
 def is_authenticated(password):
-    return password == "123"
+    return password == os.environ.get("STREAMLIT_PASSWORD1")
+
 
 def generate_login_block():
     block1 = st.empty()
@@ -61,13 +63,15 @@ def get_data():
 
 
     try:
-        cursor.execute("SELECT tipo, local, bairro, cidade, estado, img_latitude, img_longitude, "
+        cursor.execute("SELECT id, tipo, local, bairro, cidade, estado, img_latitude, img_longitude, "
                        "img_classificacao, data_denuncia, img_byte, status FROM denunciantes")
         result = cursor.fetchall()
 
         # Obtendo os nomes das colunas e criando um DataFrame
         col_names = [description[0] for description in cursor.description]
         result = pd.DataFrame(result, columns=col_names)
+        result = result.set_index('id')  # Definindo 'id' como índice
+
 
     except sqlite3.Error as e:
         print(f"Erro ao acessar o banco de dados: {e}")

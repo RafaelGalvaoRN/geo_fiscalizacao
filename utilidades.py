@@ -4,14 +4,35 @@ import hashlib
 import sqlite3
 import streamlit as st
 import re
-from classificador_lixo import model, transform
-from ml import predict_image_lixo
-from utilidades_login import haversine_distance, are_points_close
+from classificador_img_poluicao import model as model_poluicao, transform as transform_poluicao
+from classificador_img_desmatamento import model as model_desmatamento, transform as transform_desmatamento
+from classificador_img_represamento import model as model_represamento, transform as transform_represamento
+from ml import predict_image
+from utilidades_login import are_points_close
 from rich import print
 from PIL import Image
 from PIL.ExifTags import TAGS
 from streamlit import runtime
 from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+CLASSIFICATION_CONFIGS = {
+    "Lixo": {
+        "model": model_poluicao,
+        "transform": transform_poluicao,
+        "classes": ['Lixo', 'Sem Lixo']
+    },
+    "Desmatamento": {
+        "model": model_desmatamento,
+        "transform": transform_desmatamento,
+        "classes": ['Desmatamento', 'Sem Desmatamento']
+    },
+    "Represamento de Rio": {
+        "model": model_represamento,
+        "transform": transform_represamento,
+        "classes": ['Represamento', 'Sem Represamento']
+    }
+    # Você pode facilmente adicionar mais tipos aqui.
+}
 
 
 def get_geotagging(exif):
@@ -80,6 +101,15 @@ class Denuncia():
 
     def set_image_bytes(self, img_bytes):
         self.img_byte = img_bytes
+
+    def classifica_imagem(self):
+        config = CLASSIFICATION_CONFIGS.get(self.tipo)
+        if config:
+            class_idx = predict_image("temp_img.jpg", config["model"], config["transform"])
+            self.img_classificacao = config["classes"][class_idx]
+        else:
+            # Tipo não suportado ou desconhecido
+            self.img_classificacao = None
 
     def calculate_image_hash(self):
         if self.img_byte:
@@ -317,15 +347,42 @@ class Fiscalizacao(Denuncia):
             with open("temp_img.jpg", "wb") as f:
                 f.write(uploaded_file.getbuffer())
 
-            class_idx = predict_image_lixo("temp_img.jpg", model, transform)
-            classes = ['Lixo', 'Sem Lixo']
-            self.img_classificacao = classes[class_idx]
+            self.tipo = self.get_denuncia_tipo(id_denuncia)
+
+            self.classifica_imagem()
 
             # Se o método update_data_denuncia for necessário
             self.data_denuncia = self.update_data_denuncia()
 
         self.img_latitude = latitude
         self.img_longitude = longitude
+
+    def classifica_imagem(self):
+        config = CLASSIFICATION_CONFIGS.get(self.tipo)
+
+        if config:
+            class_idx = predict_image("temp_img.jpg", config["model"], config["transform"])
+            self.img_classificacao = config["classes"][class_idx]
+        else:
+            # Tipo não suportado ou desconhecido
+            self.img_classificacao = None
+
+    def get_denuncia_tipo(self, id_denuncia):
+        # Conectar ao banco de dados SQLite (substitua 'my_database.db' pelo nome do seu arquivo de banco de dados)
+        conn = sqlite3.connect('base_dados/cadastro.db')
+        cursor = conn.cursor()
+
+        cursor.execute('''
+                      SELECT tipo FROM denunciantes WHERE id = ? 
+                  ''', (id_denuncia,))
+
+        # Commit e fechar a conexão com o banco de dados
+
+        img_classificacao = cursor.fetchone()
+
+        conn.close()
+
+        return img_classificacao[0]
 
     def update_database(self):
         # Conectar ao banco de dados SQLite (substitua 'my_database.db' pelo nome do seu arquivo de banco de dados)
@@ -376,6 +433,3 @@ def convert_rgba_to_rgb(image_path):
     if imagem.mode == "RGBA":
         imagem = imagem.convert("RGB")
     return imagem
-
-
-

@@ -1,48 +1,33 @@
 import streamlit as st
-from classificador_lixo import model, transform
-from ml import predict_image_lixo
 from utilidades import get_exif_data, Denuncia, get_remote_ip, convert_rgba_to_rgb
-from streamlit_js_eval import streamlit_js_eval, get_geolocation
+from streamlit_js_eval import get_geolocation
 from streamlit_frag import menu, select_captura, oculta_elementos
 import pandas as pd
 import time
-from rich import print
 
-
-st.set_page_config("🌎 Radar Ambiental" , layout="wide", initial_sidebar_state='collapsed')
-
+st.set_page_config("🌎 Radar Ambiental", layout="wide", initial_sidebar_state='collapsed')
 
 oculta_elementos()
 
 st.title("Denúncia Ambiental ♻️")
 
-
 denunciante, local, bairro, cidade, estado, telefone, email, tipo = menu()
 
 uploaded_file = select_captura()
-
 
 if uploaded_file is not None:
     denuncia = Denuncia(tipo, denunciante, local, bairro, cidade, estado, telefone, email)
 
     st.image(uploaded_file, caption="Imagem carregada.", use_column_width=True)
 
-
     # Salve o arquivo carregado temporariamente e faça a previsão
-    with open("temp_img.jpg", "wb") as f:
-        f.write(uploaded_file.getbuffer())
-
     with open("temp_img.jpg", "wb") as f:
         f.write(uploaded_file.getbuffer())
 
     convert_rgba_to_rgb("temp_img.jpg").save("temp_img.jpg")
 
-    class_idx = predict_image_lixo("temp_img.jpg", model, transform)
-
-    # Exibindo os resultados
-    classes = ['Lixo', 'Sem Lixo']
-    # st.write(f"A imagem foi classificada como contendo: **{classes[class_idx]}**.")
-    denuncia.img_classificacao = classes[class_idx]
+    # classifica a imagem de acordo com o tipo da denúncia e seta o atributo da classe
+    denuncia.classifica_imagem()
 
     # Get and display the date and geotagging
     try:
@@ -54,7 +39,6 @@ if uploaded_file is not None:
         st.write(str(e))
 
     # st.write(f"Screen width is {streamlit_js_eval(js_expressions='screen.width', key='SCR')}")
-
 
     max_retries = 5
     delay = 2  # 2 segundos
@@ -75,21 +59,6 @@ if uploaded_file is not None:
 
         latitude, longitude = None, None
 
-    # loc = get_geolocation()
-    #
-    # # st.write(f"Your coordinates are {loc}")
-    #
-    # # st.markdown(f"The remote ip is {get_remote_ip()}")
-    #
-    #
-    #
-    # from rich import print
-    #
-    # latitude = loc['coords']['latitude']
-    # print(latitude)
-    # longitude = loc['coords']['longitude']
-    # print(longitude)
-
     if latitude and longitude:
         denuncia.img_latitude = latitude
         denuncia.img_longitude = longitude
@@ -106,6 +75,7 @@ if uploaded_file is not None:
         denuncia.calculate_image_hash()
         denuncia.update_data_denuncia()
 
+        # cadastro com filtros para deploy
         if st.button("Cadastrar Denúncia"):
             erro_validacao = denuncia.valida_cadastro()
             erro_area_img = denuncia.valida_img_distance()
@@ -118,7 +88,8 @@ if uploaded_file is not None:
             else:
                 st.success("Obrigado por usar nosso aplicativo")
 
-
-
-
-
+        # cadastro sem filtro para testes
+        # st.write(denuncia.img_classificacao)
+        # if st.button("Cadastrar Denúncia"):
+        #     denuncia.update_database()
+        #     st.success("Cadastro Realizado com sucesso")

@@ -1,9 +1,8 @@
-
 import streamlit as st
-from ml import predict_image_lixo
-from classificador_lixo import model, transform
+from ml import predict_image
 from utilidades import get_exif_data
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
+import time
 
 
 
@@ -92,44 +91,46 @@ def select_captura():
 
 def cadastro_fiscalizacao(id, uploaded_file):
         st.image(uploaded_file, caption="Imagem carregada.", use_column_width="auto")
-        st.write("Analisando a imagem...")
+
 
         # Salve o arquivo carregado temporariamente e faça a previsão
         with open("temp_img.jpg", "wb") as f:
             f.write(uploaded_file.getbuffer())
 
-        class_idx = predict_image_lixo("temp_img.jpg", model, transform)
-
-        # Exibindo os resultados
-        classes = ['Lixo', 'Sem Lixo']
-        st.write(f"A imagem foi classificada como **{classes[class_idx]}**.")
 
 
         # Get and display the date and geotagging
         try:
             date, geotagging = get_exif_data("temp_img.jpg")
-            st.write(f"The photo was taken on: {date}")
-            st.write(f"Geotagging info: {geotagging}")
+            # st.write(f"The photo was taken on: {date}")
+            # st.write(f"Geotagging info: {geotagging}")
         except Exception as e:
             st.write("Could not retrieve all EXIF data.")
             st.write(str(e))
 
-        st.write(f"Screen width is {streamlit_js_eval(js_expressions='screen.width', key='SCR')}")
-        loc = get_geolocation()
-        st.write(f"Your coordinates are {loc}")
+        max_retries = 5
+        delay = 2  # 2 segundos
+        latitude, longitude = None, None
+        for i in range(max_retries):
+            with st.spinner('Obtendo geolocalização...'):
+                loc = get_geolocation(component_key=f"getLocation_{i}")
+            if loc and 'coords' in loc:
+                latitude = loc['coords']['latitude']
+                longitude = loc['coords']['longitude']
+                st.write("Imagem Analisada")
+                break
+            time.sleep(delay)
 
-        st.write(f"Latitude: {loc['coords']['latitude']}")
-        st.write(f"Longitude: {loc['coords']['longitude']}")
+        if not latitude and not longitude:
+            st.error("Não foi possível obter a geolocalização da foto, inviabilizando a denúncia.")
+            st.warning("Tente ativar a Geolocalização do seu aparelho!")
 
-        latitude = loc['coords']['latitude']
-        longitude = loc['coords']['longitude']
+            latitude, longitude = None, None
 
 
         st.write(f"Cadastrar fiscalizacao para denúncia nº {id}")
 
 
-        return classes[class_idx], date, geotagging, loc, latitude, longitude
+        return date, geotagging, loc, latitude, longitude
 
 
-
-        # denuncia.update_data_denuncia()

@@ -6,7 +6,9 @@ st.markdown("---")  # Linha horizontal para separar o conteúdo
 
 
 
-noticias("19/10/2023", "Inclusão da aba Painel no menu")
+noticias("21/10/2023", "Treinamento da IA de análise de fotos de Represamento de Rio")
+noticias("21/10/2023", "Inclusão da aba 'Comparativo' no menu")
+noticias("19/10/2023", "Inclusão da aba 'Painel' no menu")
 noticias("17/10/2023", "Melhoramento do sistema de controle de denúncias e do controle de fiscalização")
 noticias("16/10/2023", "1º Versão do sistema, que se encontra em fase de ajustes")
 

@@ -33,7 +33,7 @@ if password != "":
 
         upload_file = select_captura()
         if upload_file is not None:
-            classe, date, geotagging, loc, latitude, longitude = cadastro_fiscalizacao(id_denuncia, upload_file)
+            date, geotagging, loc, latitude, longitude = cadastro_fiscalizacao(id_denuncia, upload_file)
             fiscalizacao = Fiscalizacao(id_denuncia, nome_fiscal, local, bairro,
                                         cidade, estado, upload_file, latitude, longitude)
 
@@ -49,13 +49,15 @@ if password != "":
 
                 if are_points_close(*ponto_fiscalizacao, *ponto_denuncia, max_meters):
                     st.success("Foto juntada pela fiscalização corresponde à área da foto juntada pela denúncia")
-                    if fiscalizacao.img_classificacao == "Sem Lixo":
-                        st.success("Foto classificada como sem lixo")
+
+                    if "Sem" in fiscalizacao.img_classificacao:
+                        st.success("Fiscalização validada")
                         update_status_denunciantes_by_id(id_denuncia, "Demanda Analisada e Baixada")
                         st.success("Cadastro bem sucedido. Demanda Finalizada")
 
                     else:
-                        st.error("Foto não foi classificada como 'sem lixo'")
+                        st.error(F"Foto classificada como {fiscalizacao.img_classificacao}")
+                        st.error("Fiscalização não foi validada pelo sistema")
 
                 else:
                     st.write(

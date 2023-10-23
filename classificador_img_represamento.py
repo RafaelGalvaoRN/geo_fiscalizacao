@@ -4,6 +4,8 @@ from torch.utils.data import DataLoader
 from torchvision import datasets, transforms
 from torchvision.models.resnet import ResNet18_Weights
 import torchvision.models as models
+import os
+
 
 
 # Defina transformações para pré-processar as imagens
@@ -13,8 +15,15 @@ transform = transforms.Compose([
     transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225]),
 ])
 
-# Carregue o conjunto de dados
-train_data = datasets.ImageFolder('img', transform=transform)
+# Determina o caminho do diretório onde o script atual reside
+script_dir = os.path.dirname(os.path.abspath(__file__))
+
+# Constrói o caminho relativo a partir do diretório do script
+dataset_path = os.path.join(script_dir, '', 'datasets', 'represamento')
+
+train_data = datasets.ImageFolder(dataset_path, transform=transform)
+
+
 train_loader = DataLoader(train_data, batch_size=32, shuffle=True)
 
 # Utilize um modelo pré-treinado e ajuste a última camada

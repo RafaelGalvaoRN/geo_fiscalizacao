@@ -28,7 +28,7 @@ def analisador_img(upload_file):
     return detected_objects
 
 
-def predict_image_lixo(image_path, model, transform):
+def predict_image(image_path, model, transform):
     image = Image.open(image_path)
     image = transform(image).unsqueeze(0)
 
@@ -37,3 +37,4 @@ def predict_image_lixo(image_path, model, transform):
         outputs = model(image)
         _, predicted = torch.max(outputs, 1)
         return predicted.item()
+
