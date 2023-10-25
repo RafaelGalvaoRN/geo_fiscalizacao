@@ -29,7 +29,7 @@ def oculta_elementos():
 
 def menu():
     tipo = st.selectbox("Tipo", ["Lixo", "Desmatamento",
-                                 "Construção Irregular", "Represamento de Rio"])
+                                 "Construção Irregular", "Represamento de Rio", "Poluição Sonora"])
 
     denunciante = st.text_input("Denunciante", max_chars=150)
 

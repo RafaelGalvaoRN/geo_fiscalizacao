@@ -5,12 +5,15 @@ import pandas as pd
 
 
 
-st_password = st.secrets["STREAMLIT_PASSWORD"]
+if "STREAMLIT_PASSWORD" in os.environ:
+    password_from_env = os.environ.get("STREAMLIT_PASSWORD")
+else:
+    password_from_env = st.secrets["STREAMLIT_PASSWORD"]
 
 # def is_authenticated(password):
 #     return password == os.environ.get("STREAMLIT_PASSWORD1")
 def is_authenticated(password):
-    return password == st_password
+    return password == password_from_env
 
 
 

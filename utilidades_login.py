@@ -10,6 +10,19 @@ import tempfile
 
 
 
+if "STREAMLIT_PASSWORD" in os.environ:
+    password_from_env = os.environ.get("STREAMLIT_PASSWORD")
+else:
+    password_from_env = st.secrets["STREAMLIT_PASSWORD"]
+
+# def is_authenticated(password):
+#     return password == os.environ.get("STREAMLIT_PASSWORD1")
+def is_authenticated(password):
+    return password == password_from_env
+
+
+
+
 def haversine_distance(lat1, lon1, lat2, lon2):
     """
     Calcula a distância em metros entre dois pontos (latitude e longitude) usando a fórmula de Haversine.
@@ -36,13 +49,6 @@ def are_points_close(lat1, lon1, lat2, lon2, max_distance=500):
     return distance <= max_distance
 
 
-
-st_password = st.secrets["STREAMLIT_PASSWORD1"]
-
-# def is_authenticated(password):
-#     return password == os.environ.get("STREAMLIT_PASSWORD1")
-def is_authenticated(password):
-    return password == st_password
 
 
 

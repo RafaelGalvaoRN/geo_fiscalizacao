@@ -1,5 +1,5 @@
-import streamlit as st
 from utilidades import get_exif_data, Denuncia, get_remote_ip, convert_rgba_to_rgb
+from utilidades_audio import *
 from streamlit_js_eval import get_geolocation
 from streamlit_frag import menu, select_captura, oculta_elementos
 import pandas as pd
@@ -14,6 +14,22 @@ st.title("Denúncia Ambiental ♻️")
 denunciante, local, bairro, cidade, estado, telefone, email, tipo = menu()
 
 uploaded_file = select_captura()
+
+
+is_audio_valid_for_registration = True
+if tipo == "Poluição Sonora":
+    is_audio_valid_for_registration = False
+    uploaded_audio = st.file_uploader("Escolha um arquivo de áudio", type=['mp3', 'wav'])
+    if uploaded_audio is not None:
+        error_message = check_audio_conditions_with_librosa(uploaded_audio)
+        if error_message:
+            st.error(error_message)
+            is_audio_valid_for_registration = False
+        else:
+            is_audio_valid_for_registration = True
+            st.success("O arquivo de áudio atende aos requisitos!")
+            st.audio(uploaded_audio, format='audio/wav')
+
 
 if uploaded_file is not None:
     denuncia = Denuncia(tipo, denunciante, local, bairro, cidade, estado, telefone, email)
@@ -81,7 +97,7 @@ if uploaded_file is not None:
             erro_area_img = denuncia.valida_img_distance()
             erro_qtd_denuncia = denuncia.valida_qtd_denuncias(10)
 
-            if not erro_validacao and not erro_area_img and not erro_qtd_denuncia:
+            if not erro_validacao and not erro_area_img and not erro_qtd_denuncia and is_audio_valid_for_registration:
                 denuncia.update_database()
                 st.success("Cadastro Realizado com sucesso")
 
