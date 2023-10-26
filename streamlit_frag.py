@@ -1,5 +1,4 @@
 import streamlit as st
-from ml import predict_image
 from utilidades import get_exif_data
 from streamlit_js_eval import streamlit_js_eval, get_geolocation
 import time
