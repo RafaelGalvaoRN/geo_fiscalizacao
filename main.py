@@ -93,21 +93,21 @@ if uploaded_file is not None:
         denuncia.update_data_denuncia()
 
         # cadastro com filtros para deploy
-        # if st.button("Cadastrar Denúncia"):
-        #     erro_validacao = denuncia.valida_cadastro()
-        #     erro_area_img = denuncia.valida_img_distance()
-        #     erro_qtd_denuncia = denuncia.valida_qtd_denuncias(10)
-        #
-        #     if not erro_validacao and not erro_area_img and not erro_qtd_denuncia and is_audio_valid_for_registration:
-        #         denuncia.update_database()
-        #         st.success("Cadastro Realizado com sucesso")
-        #
-        #     else:
-        #         st.success("Obrigado por usar nosso aplicativo")
+        if st.button("Cadastrar Denúncia"):
+            erro_validacao = denuncia.valida_cadastro()
+            erro_area_img = denuncia.valida_img_distance()
+            erro_qtd_denuncia = denuncia.valida_qtd_denuncias(10)
+
+            if not erro_validacao and not erro_area_img and not erro_qtd_denuncia and is_audio_valid_for_registration:
+                denuncia.update_database()
+                st.success("Cadastro Realizado com sucesso")
+
+            else:
+                st.success("Obrigado por usar nosso aplicativo")
 
         # cadastro sem filtro para testes
 
-        st.write(denuncia.img_classificacao)
-        if st.button("Cadastrar Denúncia"):
-            denuncia.update_database()
-            st.success("Cadastro Realizado com sucesso")
+        # st.write(denuncia.img_classificacao)
+        # if st.button("Cadastrar Denúncia"):
+        #     denuncia.update_database()
+        #     st.success("Cadastro Realizado com sucesso")
